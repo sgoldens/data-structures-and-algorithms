@@ -1,36 +1,46 @@
-# LinkedLists.rb
+# File: LinkedLists.rb
 #
 # Author: Sasha Goldenson
 #
 # License: Free to use.
 #
-# Inspiration: Ron Tsui's (https://github.com/vokoshyv) guidance has been very helpful in guiding my understanding of some of these fundamentals. I credit
-# him with for a good amount of the unit tests which serve as lines to work within. I have emulated his style, but the codingcoding solutions are mine.
+# Inspiration: Ron Tsui's (https://github.com/vokoshyv) excellent technical guidance has been very helpful in my understanding of these fundamentals.
 #
 # Motivation: Continuing my education, solidifying my fundamentals. Spreading the love.
 #
+# Test-Driven Development: Developed using 16 unit tests with a total of 60 assertions which describe and document this Linked List.
 #
-# Linked Lists are one of the fundamental data structures taught in undergraduate Computer Science.
-# Typically, they're initially made up of nodes which have two properties, a value and a pointer. 
+# Single-Linked Lists and Nodes:
+# They are both fundamental data structures taught in Computer Science. A simple single Linked List is made up of nodes. Nodes are initialized with
+# two necessary properties: a @value and a pointer, we'll call @next. 
 #
-# The node value is commonly an integer or string, but variations and expansions upon linked lists will incorporate other data types, like 
-# additional linked lists whilst implementing a hash table with seperate chaining to handle collisions.
+# The @value of a Node may be an integer or string, and more complex data structures which expand upon the Linked List will incorporate values of
+# other data types, like objects. For example, a Hash Table can be implemented as a Linked List of Linked Lists, which is one way to enable a data
+# collision strategy called seperate chaining where if two identical values are stored in the same location, they are both saved as individual objects 
+# within a Linked List or an array.
 #
-# The pointer of the node, it's other half, points to another node. This unidirectional chain creates what's called a Linked List.
+# The @next property of a Node (its pointer) points to another node by reference. The resulting unidirectional chain of Nodes is what populates 
+# our single Linked List.
 #
-# An example representation of a Linked List with a size of two, comprised of one head Node and one tail Node:
+# A single Linked List with a size of two, comprised of one head Node and one tail Node, looks something like this:
 #
-#                              Node (Head)                                                                            Node  (Tail)
-#           { @value = 5  | pointer to @next = (a reference to ->->-)}->->   { value = 2 | pointer to @next = nil }
+#              #<LinkedList:0x007fdb50999570 
+#                  @head=#<Node:0x007fdb50999548 
+#                                    @value=2, 
+#                                    @next=#<Node:0x007fdb509994f8 
+#                                                     @value=4,
+#                                                     @next=nil>>, 
+#                  @tail=#<Node:0x007fdb509994f8
+#                                 @value=4, 
+#                                 @next=nil>, 
+#                  @size=2>
 #
-# All Linked Lists, unless circular, have a head and tail node, which can even be the same node in the case of a linked list comprised of one node.
-#
-# Our Linked List will also track its size.
+# All Linked Lists, unless circular, have a head and tail node, which can also be the same node in the case of a Linked List comprised of one node. 
+# Our Linked List has a total of three properties: @head, @tail, and @size, to track its beginning, end, and size.
 #
 # Linked Lists also require methods to modify and search through themselves. We'll use methods: insert(), remove(), append(), and contains().
 #
-# Let's start coding it by merit of unit tests to develop using Test-Driven Development
-#
+# Onto the code...
 #
 ##########
 # Unit Tests
@@ -165,15 +175,15 @@ class LinkedListClassTest < Test::Unit::TestCase
   def test_linked_list_remove_method_delete_tail
     test = LinkedList.new()
     test.append(2)
+    test.append(1)
     test.append(4)
-    test.append(7)
-    test.remove(2)
+    test.remove(1)
 
     assert_equal(2, test.head.value)
     assert_equal(4, test.head.next.value)
     assert_equal(4, test.tail.value)
     assert_equal(nil, test.tail.next)
-    assert_equal(2, test.tail.size)
+    assert_equal(2, test.size)
   end
 
   def test_linked_list_remove_method_no_delete_when_out_of_range
@@ -187,7 +197,7 @@ class LinkedListClassTest < Test::Unit::TestCase
     assert_equal(4, test.head.next.value)
     assert_equal(7, test.tail.value)
     assert_equal(nil, test.tail.next)
-    assert_equal(2, test.size)
+    assert_equal(3, test.size)
   end
 
   def test_linked_list_contains_method_when_true
@@ -301,42 +311,46 @@ class LinkedList
   # Time Complexity: O(n)
   # Auxiliary Space Complexity: O(1) 
   def remove(location)
-    # Case 1: Linked list contains a single element at location zero
-    if self.size == 1 && location == 0
+    # Case 1: Trying to remove an element at an index which is out of range
+    if location >= (self.size)
+      return "Cannot remove location: #{location}, because it is out of range and doesn't exist in this Linked List."
+    # Case 2: Linked list contains a single element at location zero
+    elsif self.size == 1
       self.head = nil
       self.tail = nil
       self.size -= 1
       return
-    # Case 2: Linked list has more than one element, but we're still trying to remove the zeroth element
-    elsif self.size > 1 && location == 0
+    # Case 3: Linked list has more than one element, but we're still trying to remove the zeroth element
+    elsif location == 0
       self.head = self.head.next
       self.size -= 1
       return
-    # Case 3: Trying to remove the last element
-    elsif location == (self.size -1)
+    # Case 4: Trying to remove the last element
+    elsif location == (self.size - 1)
       work = self.head
-      counter = 0
+      counter = 1
 
       while work != nil
-        if counter == location -1  && work.next != nil && work.next == self.tail
-          work = work.next
+        if counter == (location - 1) && work.next == self.tail
           self.tail = work
           self.size -= 1
           return
-        else
-          counter += 1
         end
+        counter += 1
       end
-  # Case 4: Trying to remove an element which is neither the head nor the tail of the linked list    
-    # elsif location != 0 && location !=  (self.size -1) && work.next != nil
-    #   work.next = work.next.next
-    #   self.size -= 1
-    #       return
-    #     end
-    #   end
-    # end
-    else
-      return "Error: Index #{location} falls out of the range of the linked list."
+    # Case 5: Trying to remove an element which is neither the head nor the tail of the linked list    
+    elsif location != 0 && (location) !=  (self.size)
+      work = self.head
+      counter = 1
+
+      while work.next != nil && work.next.next != nil && counter <= location
+        if location == counter
+          work.next = work.next.next
+          self.size -= 1
+          return
+        end
+        counter += 1
+      end
     end
   end
 
@@ -352,6 +366,5 @@ class LinkedList
     end
     return false    
   end
-
 
 end
