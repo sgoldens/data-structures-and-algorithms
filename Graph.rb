@@ -11,14 +11,14 @@
 #   - total_edges
 # 
 # and methods:
-#   - addVertex
-#   - getVertex
-#   - removeVertex
-#   - addEdge
-#   - removeEdge
-#   - findNeighbors
-#   - forEachVertex
-#   - forEachEdge
+#   - add_vertex
+#   - get_vertex
+#   - remove_vertex
+#   - add_edge
+#   - remove_edge
+#   - find_neighbors
+#   - for_each_vertex
+#   - for_each_edge
 #
 ###############
 # Unit Tests
@@ -115,6 +115,20 @@ class GraphClassTest < Test::Unit::TestCase
     assert_equal({}, test.vertices)
   end
 
+  def test_graph_add_edge_adds_edges_to_both_vertices_and_total_edges
+    test = Graph.new
+    test.add_vertex(3)
+    test.add_vertex(10)
+    assert_equal(0, test.total_edges)
+
+    test.add_edge(3, 10)
+    test.add_edge(2, 10)
+
+    assert_equal({3=>3}, test.vertices[10].edges)
+    assert_equal({10=>10}, test.vertices[3].edges)
+    assert_equal(1, test.total_edges)
+  end
+
 end
 
 
@@ -170,25 +184,55 @@ class Graph
     if !vertices[id]
       return "ID does not exist in graph."
     else  
+      # if vertices
+        # remove_edge()
+      # end
       vertices.delete(id)
       @total_vertices -= 1
     end
   end
 
   def add_edge(id1,id2)
-
+    if vertices[id1] && vertices[id2]
+      if vertices[id1].edges[id2] && vertices[id2].edges[id1]
+        return "Edge already exists between id1 and id2"
+      else
+        vertices[id1].edges[id2] = id2
+        vertices[id2].edges[id1] = id1
+        self.total_edges += 1
+      end
+    else
+      return "Either Vertex of id1 or id2 do not exist in graph."
+    end
   end
 
   def remove_edge(id1,id2)
-
+    if !vertices[id1] && !vertices[id2]
+      # What about when only one of them exist in their others' edges?
+      if vertices[id1].edges[id2] && vertices[id2].edges[id1]
+        vertices[id1].edges[id2] = id2
+        vertices[id2].edges[id1] = id1
+        self.total_edges -= 1
+      else
+        return "Edge already exists between id1 and id2"
+      end
+    else
+      return "Either Vertex of id1 or id2 do not exist in graph."
+    end
   end
 
   def find_neighbors(id)
-
+    neighbors = []
+    if vertices[id]
+      vertices.each do |vertex|
+      end
+    end
   end
 
   def for_each_vertex(callback)
+    vertices.each do |vertex|
 
+    end
   end
 
   def for_each_edge(callback)
