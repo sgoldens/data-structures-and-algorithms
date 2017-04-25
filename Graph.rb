@@ -2,7 +2,7 @@
 #
 # Graph data structures can describe relationships between different points.
 #
-# Instead of Nodes or Arrays to hold data, we're going to use the Vertex class, which will contain a value a edges hash. Edges are the relationships 
+# Instead of Nodes or Arrays to hold data, we're going to use the Vertex class, which will contain a value and an edges hash. Edges are the relationships 
 # between Vertices, and a adjacency matrix is made of multiple edges and describes paths between vertices. 
 #
 # To manipulate our Graph class, it'll have the following attributes:
@@ -54,7 +54,7 @@ class VertexTest < Test::Unit::TestCase
 
 end
 
-class GraphClassTest
+class GraphClassTest < Test::Unit::TestCase
 
   def test_graph_has_properties
     test = Graph.new
@@ -65,7 +65,16 @@ class GraphClassTest
   end
 
   def test_graph_has_methods
+    test = Graph.new
 
+    assert_respond_to(test, :add_vertex)
+    assert_respond_to(test, :get_vertex)
+    assert_respond_to(test, :remove_vertex)
+    assert_respond_to(test, :add_edge)
+    assert_respond_to(test, :remove_edge)
+    assert_respond_to(test, :find_neighbors)
+    assert_respond_to(test, :for_each_vertex)
+    assert_respond_to(test, :for_each_edge)
   end
 
 end
@@ -89,7 +98,7 @@ end
 # Graph class
 ###########
 
-def Graph
+class Graph
 
   attr_accessor :vertices, :total_vertices, :total_edges
 
@@ -102,11 +111,39 @@ def Graph
   def add_vertex(id)
     # to prevent overwriting
     # TO-DO: handle data collisions more gracefully than dismissal
-    if self.vertices[id] == nil
+    if !vertices[id]
       new_vertex = Vertex(id).new
       self.vertices[id] = new_vertex
       self.total_vertices += 1
     end
+  end
+
+  def get_vertex(id)
+    
+  end
+
+  def remove_vertex(id)
+
+  end
+
+  def add_edge(id1,id2)
+
+  end
+
+  def remove_edge(id1,id2)
+
+  end
+
+  def find_neighbors(id)
+
+  end
+
+  def for_each_vertex(callback)
+
+  end
+
+  def for_each_edge(callback)
+
   end
 
 end
