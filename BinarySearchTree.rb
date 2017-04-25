@@ -8,7 +8,7 @@
 #
 # Motivation: Continuing my education, solidifying my fundamentals. Spreading the love.
 #
-# Test-Driven Development: Developed using ## unit tests with a total of ## assertions which describe and document this Binary Search Tree.
+# Test-Driven Development: Developed using 10 unit tests with a total of 31 assertions which describe and document this Binary Search Tree.
 #
 # Binary Search Trees are a special pattern of the Tree pattern. They must follow the algorithmic rules which say the left child of the parent is always
 # lesser and the right child is always greater than its parent. If there is already a child in the direction you must move while traversing the tree, you
