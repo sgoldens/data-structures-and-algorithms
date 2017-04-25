@@ -77,11 +77,50 @@ class GraphClassTest < Test::Unit::TestCase
     assert_respond_to(test, :for_each_edge)
   end
 
+  def test_graph_add_vertex_adds_to_graph_and_count
+    test = Graph.new
+
+    assert_equal(0, test.total_vertices)
+    assert_equal({}, test.vertices)
+    test.add_vertex(8)
+
+    assert_equal(1, test.total_vertices)
+    assert_instance_of(Vertex, test.vertices[8])
+  end
+
+  def test_graph_get_vertex_gets_target_vertex
+    test = Graph.new
+    test.add_vertex(9)
+
+    assert_instance_of(Vertex, test.get_vertex(9))
+  end
+
+  def test_graph_get_vertex_does_not_get_vertex_which_do_not_exist
+    test = Graph.new
+    test.add_vertex(9)
+
+    assert_equal("ID does not exist in graph.", test.get_vertex(12))
+  end
+
+
+  def test_graph_remove_vertex_reduces_graph_and_count
+    test = Graph.new
+    test.add_vertex(8)
+
+    assert_equal(1, test.total_vertices)
+    assert_instance_of(Vertex, test.vertices[8])
+    test.remove_vertex(8)
+
+    assert_equal(0, test.total_vertices)
+    assert_equal({}, test.vertices)
+  end
+
 end
 
-###########
+
+##############
 # Vertex class
-###########
+##############
 
 class Vertex
 
@@ -94,9 +133,9 @@ class Vertex
 
 end
 
-###########
+#############
 # Graph class
-###########
+#############
 
 class Graph
 
@@ -112,18 +151,28 @@ class Graph
     # to prevent overwriting
     # TO-DO: handle data collisions more gracefully than dismissal
     if !vertices[id]
-      new_vertex = Vertex(id).new
+      new_vertex = Vertex.new
+      new_vertex.value = id
       self.vertices[id] = new_vertex
       self.total_vertices += 1
     end
   end
 
   def get_vertex(id)
-    
+    if !vertices[id]
+      return "ID does not exist in graph."
+    else
+      return vertices[id]
+    end
   end
 
   def remove_vertex(id)
-
+    if !vertices[id]
+      return "ID does not exist in graph."
+    else  
+      vertices.delete(id)
+      @total_vertices -= 1
+    end
   end
 
   def add_edge(id1,id2)
