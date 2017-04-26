@@ -105,13 +105,19 @@ class GraphClassTest < Test::Unit::TestCase
 
   def test_graph_remove_vertex_reduces_graph_and_count
     test = Graph.new
-    test.add_vertex(8)
+    test.add_vertex(2)
+    test.add_vertex(7)
+    test.add_edge(2, 7)
+    assert_equal(1, test.total_edges)
+    assert_equal(2, test.total_vertices)
+    assert_instance_of(Vertex, test.vertices[2])
+
+    test.remove_vertex(2)
 
     assert_equal(1, test.total_vertices)
-    assert_instance_of(Vertex, test.vertices[8])
-    test.remove_vertex(8)
+    assert_equal(0, test.total_edges)
+    test.remove_vertex(7)
 
-    assert_equal(0, test.total_vertices)
     assert_equal({}, test.vertices)
   end
 
@@ -119,14 +125,16 @@ class GraphClassTest < Test::Unit::TestCase
     test = Graph.new
     test.add_vertex(3)
     test.add_vertex(10)
+    test.add_vertex(2)
     assert_equal(0, test.total_edges)
 
-    test.add_edge(3, 10)
-    test.add_edge(2, 10)
 
-    assert_equal({3=>3}, test.vertices[10].edges)
+    test.add_edge(2, 10)
+    test.add_edge(3, 10)
+
+    assert_equal({2=>2, 3 =>3}, test.vertices[10].edges)
     assert_equal({10=>10}, test.vertices[3].edges)
-    assert_equal(1, test.total_edges)
+    assert_equal(2, test.total_edges)
   end
 
 end
@@ -183,11 +191,15 @@ class Graph
   def remove_vertex(id)
     if !vertices[id]
       return "ID does not exist in graph."
-    else  
-      # if vertices
-        # remove_edge()
-      # end
-      vertices.delete(id)
+    end
+    if @vertices[id]
+      if @vertices[id].edges
+        @vertices[id].edges.each do |key, value|
+          @vertices[key].edges.delete(id)
+          @total_edges -= 1
+        end
+      end
+      @vertices.delete(id)
       @total_vertices -= 1
     end
   end
@@ -199,7 +211,7 @@ class Graph
       else
         vertices[id1].edges[id2] = id2
         vertices[id2].edges[id1] = id1
-        self.total_edges += 1
+        @total_edges += 1
       end
     else
       return "Either Vertex of id1 or id2 do not exist in graph."
@@ -208,11 +220,10 @@ class Graph
 
   def remove_edge(id1,id2)
     if !vertices[id1] && !vertices[id2]
-      # What about when only one of them exist in their others' edges?
       if vertices[id1].edges[id2] && vertices[id2].edges[id1]
-        vertices[id1].edges[id2] = id2
-        vertices[id2].edges[id1] = id1
-        self.total_edges -= 1
+        vertices[id1].edges.delete(id2)
+        vertices[id2].edges.delete(id1)
+        @total_edges -= 1
       else
         return "Edge already exists between id1 and id2"
       end
@@ -225,6 +236,7 @@ class Graph
     neighbors = []
     if vertices[id]
       vertices.each do |vertex|
+        p vertex
       end
     end
   end
