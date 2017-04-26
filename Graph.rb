@@ -20,8 +20,6 @@
 #   - add_edge
 #   - remove_edge
 #   - find_neighbors
-#   - for_each_vertex
-#   - for_each_edge
 #
 ###############
 # Unit Tests
