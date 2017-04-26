@@ -208,8 +208,6 @@ class Graph
   end
 
   def add_vertex(id)
-    # to prevent overwriting
-    # TO-DO: handle data collisions more gracefully than dismissal
     if !vertices[id]
       new_vertex = Vertex.new
       new_vertex.value = id
