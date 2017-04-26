@@ -2,8 +2,11 @@
 #
 # Graph data structures can describe relationships between different points.
 #
-# Instead of Nodes or Arrays to hold data, we're going to use the Vertex class, which will contain a value and an edges hash. Edges are the relationships 
-# between Vertices, and a adjacency matrix is made of multiple edges and describes paths between vertices. 
+# Instead of Nodes or Arrays to hold data, we're going to use the Vertex class, which will contain a value and an edges hash. Edges are
+# the relationships between Vertices, and a adjacency matrix is made of multiple edges and describes paths between vertices. 
+#
+# Graphs can be directed or undirected. Undirected Graphs have edges which are bidirectional, they know about each other. Directed graphs have
+# edges which go one way, and can also have edges in both directions making bidirectional edges. We'll use a directed graph for our code.
 #
 # To manipulate our Graph class, it'll have the following attributes:
 #   - vertices
@@ -73,8 +76,6 @@ class GraphClassTest < Test::Unit::TestCase
     assert_respond_to(test, :add_edge)
     assert_respond_to(test, :remove_edge)
     assert_respond_to(test, :find_neighbors)
-    assert_respond_to(test, :for_each_vertex)
-    assert_respond_to(test, :for_each_edge)
   end
 
   def test_graph_add_vertex_adds_to_graph_and_count
@@ -121,24 +122,61 @@ class GraphClassTest < Test::Unit::TestCase
     assert_equal({}, test.vertices)
   end
 
-  def test_graph_add_edge_adds_edges_to_both_vertices_and_total_edges
+  def test_graph_add_edge_adds_edges_to_vertices_edges_and_total_edges
     test = Graph.new
+    test.add_vertex(2)
     test.add_vertex(3)
     test.add_vertex(10)
-    test.add_vertex(2)
+
     assert_equal(0, test.total_edges)
 
-
     test.add_edge(2, 10)
+
+    assert_equal(1, test.total_edges)
+
     test.add_edge(3, 10)
 
-    assert_equal({2=>2, 3 =>3}, test.vertices[10].edges)
+    assert_equal({}, test.vertices[10].edges)
+    assert_equal({10=>10}, test.vertices[2].edges)
     assert_equal({10=>10}, test.vertices[3].edges)
     assert_equal(2, test.total_edges)
   end
 
-end
+  def test_graph_remove_edge_removes_edge_and_reduces_total_edges
+    test = Graph.new
+    test.add_vertex(1)
+    test.add_vertex(148)
+    test.add_edge(148,1)
 
+    assert_equal(1, test.total_edges)
+    assert_equal({1=>1}, test.vertices[148].edges)
+
+    test.remove_edge(148,1)
+
+    assert_equal(0, test.total_edges)
+    assert_equal({}, test.vertices[148].edges)
+  end
+
+  def test_graph_find_neighbors
+    test = Graph.new
+    test.add_vertex(6)
+    test.add_vertex(29)
+    test.add_vertex(42)
+    test.add_vertex(194)
+    test.add_edge(6,29)
+    test.add_edge(6,42)
+    test.add_edge(6,194)
+    test.add_edge(29,42)
+    test.add_edge(29,194)
+    test.add_edge(42,194)
+
+    assert_equal([29, 42, 194], test.find_neighbors(6))
+    assert_equal([42, 194], test.find_neighbors(29))
+    assert_equal([194], test.find_neighbors(42))
+    assert_equal([], test.find_neighbors(194))
+  end
+
+end
 
 ##############
 # Vertex class
@@ -204,13 +242,12 @@ class Graph
     end
   end
 
-  def add_edge(id1,id2)
-    if vertices[id1] && vertices[id2]
-      if vertices[id1].edges[id2] && vertices[id2].edges[id1]
-        return "Edge already exists between id1 and id2"
+  def add_edge(from_id,to_id)
+    if vertices[from_id] && vertices[to_id]
+      if vertices[from_id].edges[to_id] && vertices[to_id].edges[from_id]
+        return "Edge already exists between from_id and to_id"
       else
-        vertices[id1].edges[id2] = id2
-        vertices[id2].edges[id1] = id1
+        vertices[from_id].edges[to_id] = to_id
         @total_edges += 1
       end
     else
@@ -218,34 +255,24 @@ class Graph
     end
   end
 
-  def remove_edge(id1,id2)
-    if vertices[id1] && vertices[id2] 
-      vertices[id1].edges[id2] && vertices[id2].edges[id1]
-      vertices[id1].edges.delete(id2)
-      vertices[id2].edges.delete(id1)
+  def remove_edge(from_id,to_id)
+    if vertices[from_id] && vertices[to_id] 
+      vertices[from_id].edges[to_id] && vertices[to_id].edges[from_id]
+      vertices[from_id].edges.delete(to_id)
       @total_edges -= 1
     else
-      return "Either Vertex of id1 and/or id2 do not exist in graph."
+      return "Either Vertex of id1 and/or to_id do not exist in graph."
     end
   end
 
   def find_neighbors(id)
     neighbors = []
     if vertices[id]
-      vertices.each do |vertex|
-        p vertex
+      vertices[id].edges.each do |to|
+        neighbors << to[0]
       end
+      neighbors
     end
-  end
-
-  def for_each_vertex(callback)
-    vertices.each do |vertex|
-
-    end
-  end
-
-  def for_each_edge(callback)
-
   end
 
 end
