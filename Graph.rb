@@ -219,16 +219,13 @@ class Graph
   end
 
   def remove_edge(id1,id2)
-    if !vertices[id1] && !vertices[id2]
-      if vertices[id1].edges[id2] && vertices[id2].edges[id1]
-        vertices[id1].edges.delete(id2)
-        vertices[id2].edges.delete(id1)
-        @total_edges -= 1
-      else
-        return "Edge already exists between id1 and id2"
-      end
+    if vertices[id1] && vertices[id2] 
+      vertices[id1].edges[id2] && vertices[id2].edges[id1]
+      vertices[id1].edges.delete(id2)
+      vertices[id2].edges.delete(id1)
+      @total_edges -= 1
     else
-      return "Either Vertex of id1 or id2 do not exist in graph."
+      return "Either Vertex of id1 and/or id2 do not exist in graph."
     end
   end
 
