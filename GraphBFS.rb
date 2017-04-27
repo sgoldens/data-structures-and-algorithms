@@ -55,7 +55,7 @@ class GraphBFSTest < Test::Unit::TestCase
     assert_equal([9, 1, 2, 3, 4, 6, 8, 7], test.bfs(9))
   end
 
-  def test_graph_bfs_returns_true_when_target_is_not_found
+  def test_graph_bfs_returns_false_when_target_is_not_found
     test = GraphBFS.new
     test.populate([[0,1], [0,2], [0,3], [1,4], [1,6], [1,8], [2,3], [2,7], [2,8], [3,1], [3,8], [4,6], [5,7], [5,8], [6,4], [6,9], [7,4], [8,1], [9,4]])
     
