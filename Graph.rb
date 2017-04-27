@@ -1,9 +1,23 @@
-# Graph.rb
+# File: Graph.rb
+#
+# Author: Sasha Goldenson
+#
+# License: Free to use
 #
 # Graph data structures can describe relationships between different points.
 #
 # Instead of Nodes or Arrays to hold data, we're going to use the Vertex class, which will contain a value and an edges hash. Edges are
-# the relationships between Vertices, and a adjacency matrix is made of multiple edges and describes paths between vertices. 
+# the relationships between Vertices.
+#
+# Graphs can be represented by different data structures, each with their own advantages. The common ones
+# in practice are the adjacency list, adjacent matrix, and incidence matrix.
+#
+# Adjacency lists are generally preferred because they are more efficient for sparse graphs. We'll focus on using an adjacency list, which is an array where Vertices
+# are objects/records and every Vertex stores its edges.
+#
+# An adjacency matrix is more efficient for dense graphs. The time complexity of storing a graph is the sum of its Edges and Vertices, or O(E + V).
+# The time complexity of searching a graph depends on the algorithm used and characteristics of the graph, like if we know its density and size.
+# The auxiliary space complexity of a graph also depends on its implementation.
 #
 # Graphs can be directed or undirected. Undirected Graphs have edges which are bidirectional, they know about each other. Directed graphs have
 # edges which go one way, and can also have edges in both directions making bidirectional edges. We'll use a directed graph for our code.
@@ -26,7 +40,6 @@
 ###############
 
 require 'test/unit'
-require 'pp'
 
 class VertexTest < Test::Unit::TestCase
 
@@ -100,13 +113,12 @@ class GraphClassTest < Test::Unit::TestCase
     assert_instance_of(Vertex, test.get_vertex(9))
   end
 
-  def test_graph_get_vertex_does_not_get_vertex_which_do_not_exist
+  def test_graph_get_vertex_returns_false_when_vertex_does_not_exist
     test = Graph.new
     test.add_vertex(9)
 
-    assert_equal("ID does not exist in graph.", test.get_vertex(12))
+    assert_equal(false, test.get_vertex(12))
   end
-
 
   def test_graph_remove_vertex_reduces_graph_and_count
     test = Graph.new
@@ -179,7 +191,6 @@ class GraphClassTest < Test::Unit::TestCase
     assert_equal([194], test.find_neighbors(42))
     assert_equal([], test.find_neighbors(194))
   end
-
 
   def test_graph_populate_from_edge_tuples_arr
     test = Graph.new
@@ -270,7 +281,7 @@ class Graph
   def get_vertex(id)
     if @vertices
       if !@vertices[id]
-        return "ID does not exist in graph."
+        return false
       else
         return vertices[id]
       end
@@ -338,4 +349,5 @@ class Graph
       self.add_edge(edge[0], edge[1])
     end
   end
+
 end
