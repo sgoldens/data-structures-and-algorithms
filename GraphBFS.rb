@@ -19,7 +19,7 @@
 #
 #   - Cycle: "a cycle is a path of edges and vertices wherein a vertex is reachable from itself." (https://en.wikipedia.org/wiki/Cycle_(graph_theory)
 #
-#   - Degree (or Valency): For a graph, it's the total number of degrees of its vertices, and for a Vertex it's is the number of its edges. In an 
+#   - Degree (or Valency): For a graph, it's the total number of degrees of its vertices, and for a Vertex it's the number of its edges. In an 
 # undirected graph, the degree of a vertex can be easily found on paper by drawing a circle around the Vertex and counting the number of Edges 
 # connecting to it. On a directed graph, the degree of a vertex is found only by evaluating all paths to it.
 #

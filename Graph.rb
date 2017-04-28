@@ -244,9 +244,9 @@ class Vertex
 
   attr_accessor :value, :edges
 
-  def initialize(id=nil)
+  def initialize(id=nil, edges={})
     @value = id
-    @edges = {}
+    @edges = edges
   end
 
 end
@@ -296,7 +296,7 @@ class Graph
       if @vertices[id].edges
         @vertices[id].edges.each do |key, value|
           @vertices[key].edges.delete(id)
-          @total_edges -= 1
+          @total_edges -= 1 
         end
       end
       @vertices.delete(id)
