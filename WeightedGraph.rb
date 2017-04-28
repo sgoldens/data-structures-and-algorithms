@@ -4,9 +4,9 @@
 
 require 'test/unit'
 require 'priority_queue'
-require_relative('GraphDFS')
+require_relative('Graph')
 
-class WeightedGraph < GraphDFS
+class WeightedGraph < Graph
   def initialize
     super
   end
@@ -25,52 +25,72 @@ class WeightedGraph < GraphDFS
     results = ""
     cumulative_walk_score = []
 
-    # initialize the source node distance as 0 and all other distances to infinity
+    # check for both nodes existing in @vertices
+    return false if !get_vertex(source) || !get_vertex(terminal)
+    # initialize the source node distance as 0 and, ...
     @vertices.each do |vertex, weighted_edges|
         if vertex == source
           distances[vertex] = 0
           nodes[vertex] = 0
+        # all other distances to infinity
         else
           distances[vertex] = Float::INFINITY
           nodes[vertex] = Float::INFINITY
         end
+        # populate previous with each vertex
         previous[vertex] = nil
       end
   
-    # the nodes PriorityQueue is used as a min heap, to find the smallest distance weight
-    # among the distances, fast O(1) "Constant" lookup 
+    # the nodes PriorityQueue is used as a min heap to quickly find the smallest weight
+    # among remaining nodes, O(1) "Constant" lookup 
     while nodes
       # store the smallest path as a temp var and delete it from the nodes
       smallest = nodes.delete_min_return_key
+      # If we reached the terminal
       if smallest == terminal
+        # declare results var
         path = []
+        # loop through a record in the previous step of the path
         while previous[smallest]
+          # push it to our results var
           path.push(smallest)
+          # and loop through previous
           smallest = previous[smallest]
         end
         # Push the source onto the end
         path.push(source)
         # Shovel each result path element into the results string for displaying shortest path
-        path.each do | el | results << el end
-        return results
+        return "The shortest path from #{source} to #{terminal} is #{to_s path.reverse}."
       end
 
-      # break if the rest of the nodes is infinite or nil after storing and deleting the next smallest step
+      # break if the rest of the node distances are infinite or nil after storing and deleting the next smallest step
       if (distances[smallest] == Float::INFINITY) or (smallest == nil)
         break
       end
 
-      # find the first non-nodes neighbor
+      # grab each neighbor of smallest, and ...
       @vertices[smallest].each do | neighbor, value |
+          # ... loop over the neighbors edges by summing that alternate distance
+          # of the vertex values in smallest + each neighbor, and ...
           alt = distances[smallest] + @vertices[smallest][neighbor]
+          # if the alternate route is smaller than the distance to its neighbor
           if alt < distances[neighbor]
+            # choose that alternate path, store a record of it in the distances hash
             distances[neighbor] = alt
+            # put it in the previous hash as a distance for smallest
             previous[neighbor] = smallest
+            # and set the value of that neighbor in our min-heap PriorityQueue
             nodes[neighbor] = alt
           end
         end
     end
+    # after the nodes PriorityQueue is empty, if a path from source to terminal was not found
     return distances
+  end
+
+  # join the array elements as a word, string for returning the results path
+  def to_s(array)
+    array.join('')
   end
 
 end
@@ -114,10 +134,10 @@ class WeightedGraphTest < Test::Unit::TestCase
     weighted_edges.each do |w_edge|
       test.add_weighted_vertex(w_edge.first[0], w_edge.first[1])
     end
-    assert_equal("JIGA", test.djikstras_shortest_path("A", "J"))
-    assert_equal("ACJ", test.djikstras_shortest_path("J", "A"))
-    assert_equal("ACDB", test.djikstras_shortest_path("B", "A"))
-    assert_equal("HIG", test.djikstras_shortest_path("G", "H"))
+    assert_equal("The shortest path from A to J is AGIJ.", test.djikstras_shortest_path("A", "J"))
+    assert_equal("The shortest path from J to A is JCA.", test.djikstras_shortest_path("J", "A"))
+    assert_equal("The shortest path from B to A is BDCA.", test.djikstras_shortest_path("B", "A"))
+    assert_equal(false  , test.djikstras_shortest_path("G", "X"))
     end
 
 end
