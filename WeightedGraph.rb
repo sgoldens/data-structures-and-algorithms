@@ -23,7 +23,6 @@ class WeightedGraph < Graph
     previous = {}
     nodes = PriorityQueue.new
     results = ""
-    cumulative_walk_score = []
 
     # check for both nodes existing in @vertices
     return false if !get_vertex(source) || !get_vertex(terminal)
@@ -59,7 +58,7 @@ class WeightedGraph < Graph
         end
         # Push the source onto the end
         path.push(source)
-        # Shovel each result path element into the results string for displaying shortest path
+        # Print each result path element into a results string for displaying shortest path from source to terminal
         return "The shortest path from #{source} to #{terminal} is #{to_s path.reverse}."
       end
 
@@ -131,9 +130,12 @@ class WeightedGraphTest < Test::Unit::TestCase
                                    {"H" => {"E" => 2, "F" => 61}},
                                    {"I" => {"F" => 37, "G" => 40, "H" => 49, "J" => 42}},
                                    {"J" => {"B" => 27, "C" => 36, "F" => 99}}]
+
     weighted_edges.each do |w_edge|
       test.add_weighted_vertex(w_edge.first[0], w_edge.first[1])
     end
+    assert_equal("The shortest path from A to E is AE.", test.djikstras_shortest_path("A", "E"))
+    assert_equal("The shortest path from A to J is AGIJ.", test.djikstras_shortest_path("A", "J"))
     assert_equal("The shortest path from A to J is AGIJ.", test.djikstras_shortest_path("A", "J"))
     assert_equal("The shortest path from J to A is JCA.", test.djikstras_shortest_path("J", "A"))
     assert_equal("The shortest path from B to A is BDCA.", test.djikstras_shortest_path("B", "A"))
