@@ -109,12 +109,12 @@ class GraphDFS < Graph
     return false unless @visited.include?(terminal)
     # store the results path in an array
     path = []
-    # store a pointer starting as terminal
+    # store terminal as a target (named current) for checks later on in the loop below
     current = terminal
 
     # Loop, until terminal is equal to source
     while(current != source) do
-      # by unshifting the pointer to the results path
+      # by unshifting the current pointer to the results path
       path.unshift(current)
       # and resetting the pointer to the next vertex stored in the results returned from DFS 
       current = @edge_to[current]

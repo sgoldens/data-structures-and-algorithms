@@ -20,7 +20,7 @@
 # The auxiliary space complexity of a graph also depends on its implementation.
 #
 # Graphs can be directed or undirected. Undirected Graphs have edges which are bidirectional, they know about each other. Directed graphs have
-# edges which go one way, and can also have edges in both directions making bidirectional edges. We'll use a directed graph for our code.
+# edges which go one way, and can also have edges in both directions making bidirectional edges. We'll use edges tuples to populate our graph.
 #
 # To manipulate our Graph class, it'll have the following attributes:
 #   - vertices
@@ -34,6 +34,8 @@
 #   - add_edge
 #   - remove_edge
 #   - find_neighbors
+#   - populate_directed
+#   - populate_undirected
 #
 ###############
 # Unit Tests
@@ -192,7 +194,7 @@ class GraphClassTest < Test::Unit::TestCase
     assert_equal([], test.find_neighbors(194))
   end
 
-  def test_graph_populate_from_edge_tuples_arr
+  def test_graph_populate_directed_from_edge_tuples_arr
     test = Graph.new
     edge_tuples_arr = [[0,1], 
                                    [0,2], 
@@ -213,7 +215,7 @@ class GraphClassTest < Test::Unit::TestCase
                                    [7,4], 
                                    [8,1], 
                                    [9,4]]
-    test.populate(edge_tuples_arr)
+    test.populate_directed(edge_tuples_arr)
 
     test.vertices.length.times do |i| 
       assert_instance_of(Vertex, test.vertices[i])
@@ -231,6 +233,48 @@ class GraphClassTest < Test::Unit::TestCase
     assert_equal(10, test.vertices.length)
     assert_equal(10, test.total_vertices)
     assert_equal(19, test.total_edges)
+    assert_equal(nil, test.vertices[10])
+  end
+
+  def test_graph_populate_undirected_from_edge_tuples_arr
+    test = Graph.new
+    edge_tuples_arr = [[0,1], 
+                                   [0,2], 
+                                   [0,3], 
+                                   [1,4], 
+                                   [1,6], 
+                                   [1,8], 
+                                   [2,3], 
+                                   [2,7], 
+                                   [2,8], 
+                                   [3,1], 
+                                   [3,8], 
+                                   [4,6], 
+                                   [5,7], 
+                                   [5,8], 
+                                   [6,4], 
+                                   [6,9], 
+                                   [7,4], 
+                                   [8,1], 
+                                   [9,4]]
+    test.populate_undirected(edge_tuples_arr)
+
+    test.vertices.length.times do |i| 
+      assert_instance_of(Vertex, test.vertices[i])
+    end
+    assert_equal([1,2,3], test.find_neighbors(0))
+    assert_equal([0,4,6,8,3], test.find_neighbors(1))
+    assert_equal([0,3,7,8], test.find_neighbors(2))
+    assert_equal([0,2,1,8], test.find_neighbors(3))
+    assert_equal([1,6,7,9], test.find_neighbors(4))
+    assert_equal([7,8], test.find_neighbors(5))
+    assert_equal([1,4,9], test.find_neighbors(6))
+    assert_equal([2,5,4], test.find_neighbors(7))
+    assert_equal([1,2,3,5], test.find_neighbors(8))
+    assert_equal([6,4], test.find_neighbors(9))
+    assert_equal(10, test.vertices.length)
+    assert_equal(10, test.total_vertices)
+    assert_equal(34, test.total_edges)
     assert_equal(nil, test.vertices[10])
   end
 
@@ -339,7 +383,19 @@ class Graph
     end
   end
 
-  def populate(edge_tuples_arr)
+  def populate_undirected(edge_tuples_arr)
+    if !@vertices
+      @vertices = {}
+    end
+    edge_tuples_arr.each do |edge|
+      self.add_vertex(edge[0]) if !@vertices[edge[0]]
+      self.add_vertex(edge[1]) if !@vertices[edge[1]]
+      self.add_edge(edge[0], edge[1])
+      self.add_edge(edge[1], edge[0])
+    end
+  end
+
+  def populate_directed(edge_tuples_arr)
     if !@vertices
       @vertices = {}
     end
