@@ -1,42 +1,131 @@
-# File: Graph.rb
-#
-# Author: Sasha Goldenson
-#
-# License: Free to use
-#
-# Graph data structures can describe relationships between different points.
-#
-# Instead of Nodes or Arrays to hold data, we're going to use the Vertex class, which will contain a value and an edges hash. Edges are
-# the relationships between Vertices.
-#
-# Graphs can be represented by different data structures, each with their own advantages. The common ones
-# in practice are the adjacency list, adjacent matrix, and incidence matrix.
-#
-# Adjacency lists are generally preferred because they are more efficient for sparse graphs. We'll focus on using an adjacency list, which is an array where Vertices
-# are objects/records and every Vertex stores its edges.
-#
-# An adjacency matrix is more efficient for dense graphs. The time complexity of storing a graph is the sum of its Edges and Vertices, or O(E + V).
-# The time complexity of searching a graph depends on the algorithm used and characteristics of the graph, like if we know its density and size.
-# The auxiliary space complexity of a graph also depends on its implementation.
-#
-# Graphs can be directed or undirected. Undirected Graphs have edges which are bidirectional, they know about each other. Directed graphs have
-# edges which go one way, and can also have edges in both directions making bidirectional edges. We'll use edges tuples to populate our graph.
-#
-# To manipulate our Graph class, it'll have the following attributes:
-#   - vertices
-#   - total_vertices
-#   - total_edges
-# 
-# and methods:
-#   - add_vertex
-#   - get_vertex
-#   - remove_vertex
-#   - add_edge
-#   - remove_edge
-#   - find_neighbors
-#   - populate_directed
-#   - populate_undirected
-#
+##############
+# Vertex class
+##############
+
+class Vertex
+
+  attr_accessor :value, :edges
+
+  def initialize(id=nil, edges={})
+    @value = id
+    @edges = edges
+  end
+
+end
+
+#############
+# Graph class
+#############
+
+class Graph
+
+  attr_accessor :vertices, :total_vertices, :total_edges, :args
+
+  def initialize()
+    @total_vertices = 0
+    @total_edges = 0
+    @vertices = {}
+  end
+
+  def add_vertex(id)
+    if @vertices
+      if !@vertices[id]
+        new_vertex = Vertex.new
+        new_vertex.value = id
+        self.vertices[id] = new_vertex
+        self.total_vertices += 1
+      else
+        return "Vertex with id: #{id} already exists in graph" 
+      end
+    end
+  end
+
+  def get_vertex(id)
+    if @vertices
+      if !@vertices[id]
+        return false
+      else
+        return vertices[id]
+      end
+    end
+  end
+
+  def remove_vertex(id)
+    if !vertices[id]
+      return "ID does not exist in graph."
+    end
+    if @vertices[id]
+      if @vertices[id].edges
+        @vertices[id].edges.each do |key, value|
+          @vertices[key].edges.delete(id)
+          @total_edges -= 1 
+        end
+      end
+      @vertices.delete(id)
+      @total_vertices -= 1
+    end
+  end
+
+  def add_edge(from_id,to_id)
+    if @vertices
+      if vertices[from_id] && vertices[to_id]
+        if vertices[from_id].edges[to_id] && vertices[to_id].edges[from_id]
+          return "Edge already exists between from_id and to_id"
+        else
+          vertices[from_id].edges[to_id] = to_id
+          @total_edges += 1
+        end
+      else
+        return "Either Vertex of id1 or id2 do not exist in graph."
+      end
+    end
+  end
+
+  def remove_edge(from_id,to_id)
+    if vertices[from_id] && vertices[to_id] 
+      vertices[from_id].edges[to_id] && vertices[to_id].edges[from_id]
+      vertices[from_id].edges.delete(to_id)
+      @total_edges -= 1
+    else
+      return "Either Vertex of id1 and/or to_id do not exist in graph."
+    end
+  end
+
+  def find_neighbors(id)
+    neighbors = []
+    if vertices[id]
+      vertices[id].edges.each do |to|
+        neighbors << to[0]
+      end
+      neighbors
+    end
+  end
+
+  def populate_undirected(edge_tuples_arr)
+    if !@vertices
+      @vertices = {}
+    end
+    edge_tuples_arr.each do |edge|
+      self.add_vertex(edge[0]) if !@vertices[edge[0]]
+      self.add_vertex(edge[1]) if !@vertices[edge[1]]
+      self.add_edge(edge[0], edge[1])
+      self.add_edge(edge[1], edge[0])
+    end
+  end
+
+  def populate_directed(edge_tuples_arr)
+    if !@vertices
+      @vertices = {}
+    end
+    edge_tuples_arr.each do |edge|
+      self.add_vertex(edge[0]) if !@vertices[edge[0]]
+      self.add_vertex(edge[1]) if !@vertices[edge[1]]
+      self.add_edge(edge[0], edge[1])
+    end
+  end
+
+end
+
 ###############
 # Unit Tests
 ###############
@@ -276,134 +365,6 @@ class GraphClassTest < Test::Unit::TestCase
     assert_equal(10, test.total_vertices)
     assert_equal(34, test.total_edges)
     assert_equal(nil, test.vertices[10])
-  end
-
-end
-
-##############
-# Vertex class
-##############
-
-class Vertex
-
-  attr_accessor :value, :edges
-
-  def initialize(id=nil, edges={})
-    @value = id
-    @edges = edges
-  end
-
-end
-
-#############
-# Graph class
-#############
-
-class Graph
-
-  attr_accessor :vertices, :total_vertices, :total_edges, :args
-
-  def initialize()
-    @total_vertices = 0
-    @total_edges = 0
-    @vertices = {}
-  end
-
-  def add_vertex(id)
-    if @vertices
-      if !@vertices[id]
-        new_vertex = Vertex.new
-        new_vertex.value = id
-        self.vertices[id] = new_vertex
-        self.total_vertices += 1
-      else
-        return "Vertex with id: #{id} already exists in graph" 
-      end
-    end
-  end
-
-  def get_vertex(id)
-    if @vertices
-      if !@vertices[id]
-        return false
-      else
-        return vertices[id]
-      end
-    end
-  end
-
-  def remove_vertex(id)
-    if !vertices[id]
-      return "ID does not exist in graph."
-    end
-    if @vertices[id]
-      if @vertices[id].edges
-        @vertices[id].edges.each do |key, value|
-          @vertices[key].edges.delete(id)
-          @total_edges -= 1 
-        end
-      end
-      @vertices.delete(id)
-      @total_vertices -= 1
-    end
-  end
-
-  def add_edge(from_id,to_id)
-    if @vertices
-      if vertices[from_id] && vertices[to_id]
-        if vertices[from_id].edges[to_id] && vertices[to_id].edges[from_id]
-          return "Edge already exists between from_id and to_id"
-        else
-          vertices[from_id].edges[to_id] = to_id
-          @total_edges += 1
-        end
-      else
-        return "Either Vertex of id1 or id2 do not exist in graph."
-      end
-    end
-  end
-
-  def remove_edge(from_id,to_id)
-    if vertices[from_id] && vertices[to_id] 
-      vertices[from_id].edges[to_id] && vertices[to_id].edges[from_id]
-      vertices[from_id].edges.delete(to_id)
-      @total_edges -= 1
-    else
-      return "Either Vertex of id1 and/or to_id do not exist in graph."
-    end
-  end
-
-  def find_neighbors(id)
-    neighbors = []
-    if vertices[id]
-      vertices[id].edges.each do |to|
-        neighbors << to[0]
-      end
-      neighbors
-    end
-  end
-
-  def populate_undirected(edge_tuples_arr)
-    if !@vertices
-      @vertices = {}
-    end
-    edge_tuples_arr.each do |edge|
-      self.add_vertex(edge[0]) if !@vertices[edge[0]]
-      self.add_vertex(edge[1]) if !@vertices[edge[1]]
-      self.add_edge(edge[0], edge[1])
-      self.add_edge(edge[1], edge[0])
-    end
-  end
-
-  def populate_directed(edge_tuples_arr)
-    if !@vertices
-      @vertices = {}
-    end
-    edge_tuples_arr.each do |edge|
-      self.add_vertex(edge[0]) if !@vertices[edge[0]]
-      self.add_vertex(edge[1]) if !@vertices[edge[1]]
-      self.add_edge(edge[0], edge[1])
-    end
   end
 
 end
