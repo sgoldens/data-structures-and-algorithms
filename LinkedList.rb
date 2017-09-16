@@ -1,50 +1,140 @@
-# File: LinkedLists.rb
-#
-# Author: Sasha Goldenson
-#
-# License: Free to use
-#
-# Inspiration: Ron Tsui's (https://github.com/vokoshyv) excellent technical guidance has been very helpful in my understanding of these fundamentals.
-#
-# Motivation: Continuing my education, solidifying my fundamentals. Spreading the love.
-#
-# Test-Driven Development: Developed using 16 unit tests with a total of 60 assertions which describe and document this Linked List.
-#
-# Single-Linked Lists and Nodes:
-# They are both fundamental data structures taught in Computer Science. A simple single Linked List is made up of nodes. Nodes are initialized with
-# two necessary properties: a @value and a pointer, we'll call @next.
-#
-# The @value of a Node may be an integer or string, and more complex data structures which expand upon the Linked List will incorporate values of
-# other data types, like objects. For example, a Hash Table can be implemented as a Linked List of Linked Lists, which is one way to enable a data
-# collision strategy called seperate chaining where if two identical values are stored in the same location, they are both saved as individual objects
-# within a Linked List or an array.
-#
-# The @next property of a Node (its pointer) points to another node by reference. The resulting unidirectional chain of Nodes is what populates
-# our single Linked List.
-#
-# A single Linked List with a size of two, comprised of one head Node and one tail Node, looks something like this:
-#
-#              #<LinkedList:0x007fdb50999570
-#                  @head=#<Node:0x007fdb50999548
-#                                    @value=2,
-#                                    @next=#<Node:0x007fdb509994f8
-#                                                     @value=4,
-#                                                     @next=nil>>,
-#                  @tail=#<Node:0x007fdb509994f8
-#                                 @value=4,
-#                                 @next=nil>,
-#                  @size=2>
-#
-# All Linked Lists, unless circular, have a head and tail node, which can also be the same node in the case of a Linked List comprised of one node.
-# Our Linked List has a total of three properties: @head, @tail, and @size, to track its beginning, end, and size.
-#
-# Linked Lists also require methods to modify and search through themselves. We'll use methods: insert(), remove(), append(), and contains().
-#
-# Onto the code...
-#
-##########
+###########
+# Node Class
+###########
+
+class Node
+  attr_accessor :value, :next
+
+  def initialize(value = nil)
+    @value = value
+    @next = nil
+  end
+end
+
+###############
+# LinkedList Class
+###############
+
+class LinkedList
+  attr_accessor :head, :tail, :size
+
+  def initialize
+    @head = nil
+    @tail = nil
+    @size = 0
+  end
+
+  # Time Complexity: O(1)
+  # Auxiliary Space Complexity: O(1)
+  def append(value)
+    if size == 0
+      # Initializing value being inserted into empty linked list
+      self.head = Node.new(value)
+      self.tail = head
+    else
+      # Set the existing tail.next to the new appendage, and
+      # set the tail to that new node.
+      tail.next = Node.new(value)
+      self.tail = tail.next
+    end
+    # Add one to the linked list size
+    self.size += 1
+  end
+
+  # Time Complexity: O(n)
+  # Auxiliary Space Complexity: O(1)
+  def insert(value, sIndex)
+    current = head
+    # make a counter starting at 1
+    counter = 1
+    # check the current Node and that counter
+    # is smaller or equal to the search Index
+    while !current.nil? && counter <= sIndex
+      # check if counter is equal to the search Index
+      if counter == sIndex
+        # make a copy, tempNode, of the next at the sIndex
+        tmpNode = current.next
+        # set the current next to the newNode
+        current.next = Node.new(value)
+        # set the newNode's next to the copied tempNode
+        current.next.next = tmpNode
+        # if setting the tail value, the next value is empty
+        if tmpNode.nil?
+          # so, set the tail to the newNode
+          self.tail = current.next
+        end
+        # increment self.size
+        self.size += 1
+      end
+      # traverse the current node to the next node for the next loop
+      current = current.next
+      # increment the counter
+      counter += 1
+    end
+    "Cannot insert value: #{value}, because searchIndex: #{sIndex} doesn't exist in this Linked List."
+  end
+
+  # Time Complexity: O(n)
+  # Auxiliary Space Complexity: O(1)
+  def remove(location)
+    # Case 1: Trying to remove an element at an index which is out of range
+    if location >= self.size
+      "Cannot remove location: #{location}, because it is out of range and doesn't exist in this Linked List."
+    # Case 2: Linked list contains a single element at location zero
+    elsif self.size == 1
+      self.head = nil
+      self.tail = nil
+      self.size -= 1
+      nil
+    # Case 3: Linked list has more than one element, but we're still trying to remove the zeroth element
+    elsif location == 0
+      self.head = head.next
+      self.size -= 1
+      nil
+    # Case 4: Trying to remove the last element
+    elsif location == (self.size - 1)
+      work = head
+      counter = 1
+
+      until work.nil?
+        if counter == (location - 1) && work.next == tail
+          self.tail = work
+          self.size -= 1
+          return
+        end
+        counter += 1
+      end
+    # Case 5: Trying to remove an element which is neither the head nor the tail of the linked list
+    elsif location != 0 && location != self.size
+      work = head
+      counter = 1
+
+      while !work.next.nil? && !work.next.next.nil? && counter <= location
+        if location == counter
+          work.next = work.next.next
+          self.size -= 1
+          return
+        end
+        counter += 1
+      end
+    end
+  end
+
+  # Time Complexity: O(n)
+  # Auxiliary Space Complexity: O(1)
+  def contains(value)
+    work = head
+    until work.nil?
+      return true if work.value == value
+      work = work.next
+    end
+    false
+  end
+end
+
+############
 # Unit Tests
-##########
+############
 
 require 'test/unit'
 
@@ -226,139 +316,5 @@ class LinkedListClassTest < Test::Unit::TestCase
     assert_equal(7, test.tail.value)
     assert_equal(nil, test.tail.next)
     assert_equal(false, test.contains(9))
-  end
-end
-
-###########
-# Node Class
-###########
-
-class Node
-  attr_accessor :value, :next
-
-  def initialize(value = nil)
-    @value = value
-    @next = nil
-  end
-end
-
-###############
-# LinkedList Class
-###############
-
-class LinkedList
-  attr_accessor :head, :tail, :size
-
-  def initialize
-    @head = nil
-    @tail = nil
-    @size = 0
-  end
-
-  # Time Complexity: O(1)
-  # Auxiliary Space Complexity: O(1)
-  def append(value)
-    if size == 0
-      # Initializing value being inserted into empty linked list
-      self.head = Node.new(value)
-      self.tail = head
-    else
-      # Set the existing tail.next to the new appendage, and
-      # set the tail to that new node.
-      tail.next = Node.new(value)
-      self.tail = tail.next
-    end
-    # Add one to the linked list size
-    self.size += 1
-  end
-
-  # Time Complexity: O(n)
-  # Auxiliary Space Complexity: O(1)
-  def insert(value, sIndex)
-    current = head
-    # make a counter starting at 1
-    counter = 1
-    # check the current Node and that counter
-    # is smaller or equal to the search Index
-    while !current.nil? && counter <= sIndex
-      # check if counter is equal to the search Index
-      if counter == sIndex
-        # make a copy, tempNode, of the next at the sIndex
-        tmpNode = current.next
-        # set the current next to the newNode
-        current.next = Node.new(value)
-        # set the newNode's next to the copied tempNode
-        current.next.next = tmpNode
-        # if setting the tail value, the next value is empty
-        if tmpNode.nil?
-          # so, set the tail to the newNode
-          self.tail = current.next
-        end
-        # increment self.size
-        self.size += 1
-      end
-      # traverse the current node to the next node for the next loop
-      current = current.next
-      # increment the counter
-      counter += 1
-    end
-    "Cannot insert value: #{value}, because searchIndex: #{sIndex} doesn't exist in this Linked List."
-  end
-
-  # Time Complexity: O(n)
-  # Auxiliary Space Complexity: O(1)
-  def remove(location)
-    # Case 1: Trying to remove an element at an index which is out of range
-    if location >= self.size
-      "Cannot remove location: #{location}, because it is out of range and doesn't exist in this Linked List."
-    # Case 2: Linked list contains a single element at location zero
-    elsif self.size == 1
-      self.head = nil
-      self.tail = nil
-      self.size -= 1
-      nil
-    # Case 3: Linked list has more than one element, but we're still trying to remove the zeroth element
-    elsif location == 0
-      self.head = head.next
-      self.size -= 1
-      nil
-    # Case 4: Trying to remove the last element
-    elsif location == (self.size - 1)
-      work = head
-      counter = 1
-
-      until work.nil?
-        if counter == (location - 1) && work.next == tail
-          self.tail = work
-          self.size -= 1
-          return
-        end
-        counter += 1
-      end
-    # Case 5: Trying to remove an element which is neither the head nor the tail of the linked list
-    elsif location != 0 && location != self.size
-      work = head
-      counter = 1
-
-      while !work.next.nil? && !work.next.next.nil? && counter <= location
-        if location == counter
-          work.next = work.next.next
-          self.size -= 1
-          return
-        end
-        counter += 1
-      end
-    end
-  end
-
-  # Time Complexity: O(n)
-  # Auxiliary Space Complexity: O(1)
-  def contains(value)
-    work = head
-    until work.nil?
-      return true if work.value == value
-      work = work.next
-    end
-    false
   end
 end
