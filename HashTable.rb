@@ -1,46 +1,135 @@
-# File: LinkedLists.rb
-#
-# Author: Sasha Goldenson
-#
-# License: Free to use
-#
-# Inspiration: Ron Tsui's (https://github.com/vokoshyv) excellent technical guidance has been very helpful in my understanding of these fundamentals.
-#
-# Motivation: Continuing my education, solidifying my fundamentals. Spreading the love.
-#
-#   Hash Tables (AKA Hash Maps, Dictionaries, Hashes) are associative arrays of key-value storage. We're going to implement one using an array,
-#   and build the hash table by populating that array with our key-value pairs.
-#
-#   We'll need some properties and methods to describe and manipulate our Hash Table, namely:
-#
-# Properities: storage, buckets, size
-#
-#   - Storage is our stored data, and will be represented by an array (of arrays, when populated.)
-#
-#   - Buckets is the number of slots we have to store key-value pairs within storage. This number is variable, depending on storage contents. We'll 
-#     start our Hash Table by initializing it to 8.
-#
-#   - Size is the number of key-value pairs we're currently storing in Storage.
-#
-# Methods: hash, insert, delete, retrieve, and resize
-#
-#   - Hash is a method which takes the key to insert and the number of buckets, and evaluates it to the index which we'll insert into. There are many 
-#     different hashing methods, and we'll use the one provided here.
-#
-#   - Insert(key, value), Delete(key), and Retrieve(key) methods are self-explanatory.
-#
-#   - Resize is used when we need to increase the number of buckets our Hash Table has. If we wanted to double the number of buckets,
-#     we would also have to reevaluate the data stored and assign them to their new buckets. The rule is when our size
-#     (number of stored key-value pairs) exceeds 75% of the number of buckets, we'll double our number of buckets, and on the other side, we'll halve 
-#     the number of buckets when the number of stored key-value pairs drop below 25%.
-#
-#   The handling of data collisions, when two different key-value to store hash to the same index, requires a separate chaining strategy. 
-#   Our separate chaining strategy is that we'll use an array in each location we store tuples, so we can store more than one key-value pairs which 
-#   hash to the same index.
-# 
-##########
+###############
+# HashTable class
+###############
+
+class HashTable
+
+  attr_accessor :storage, :buckets, :size, :resizing
+
+  def initialize
+    @storage = []
+    @buckets = 8
+    @size = 0
+    @resizing = false
+  end
+
+  def hash(str)
+    hash = 5381
+
+    str.split("").each do |i|
+      char = i
+      hash = ((hash << 5) + hash) + char.ord
+    end
+    return hash % self.buckets
+  end
+
+  def insert(key, value)
+    bucket_index = self.hash(key)
+    if self.storage[bucket_index] == nil 
+      self.storage[bucket_index] = []
+      self.storage[bucket_index].push([key, value])
+      self.size += 1
+      self.resize
+    else
+      bucket = self.storage[bucket_index]
+
+      bucket.length.times do |counter|
+        if bucket[counter][0] == key
+          bucket[counter][1] = value
+        end
+      end
+
+      bucket.push([key, value])
+      self.size += 1
+      self.resize
+    end
+  end
+
+  def delete(key)
+    bucket_index = self.hash(key)
+
+    if self.storage[bucket_index] == nil
+      return "Key: '#{key}' not found."
+    else
+      bucket = self.storage[bucket_index]
+      bucket.length.times do |counter|
+        if bucket[counter][0] == key
+          temp = bucket[counter][1]
+          bucket.delete_at(counter)
+          self.resize
+          self.size -= 1
+          return "key-value: [#{key}][#{temp}] was deleted."
+        end
+      end
+      return "This key was not found: '#{key}'"
+    end
+  end
+
+  def retrieve(key)
+    bucket_index = self.hash(key)
+
+    if self.storage[bucket_index] == nil
+      return false
+    else
+      bucket = self.storage[bucket_index]
+      bucket.length.times do |counter|
+        if bucket[counter][0] == key
+          return true
+        end
+      end
+    end
+  end
+
+  def resize
+    allElements = []
+    if self.size > (0.75 * self.buckets) && (self.resizing == false)
+      self.resizing = true
+      self.storage.each do |bucket|
+        if bucket != nil
+          bucket.each do |tuple|
+            allElements.push(tuple)
+          end
+        end
+      end
+    
+      self.storage = []
+      self.size = 0
+      self.buckets = (self.buckets * 2)
+
+      allElements.each do |tuple|
+        self.insert(tuple[0], tuple[1])
+      end
+      self.resizing = false
+      return 'HashTable number of buckets has been doubled.'
+    # We don't want our buckets to go below 8 buckets minimum
+    elsif (self.size < (0.25 * self.buckets)) && self.buckets >= 9.0 && (self.resizing == false)
+      self.resizing = true
+      self.storage.each do |bucket|
+        if bucket != nil
+          bucket.each do |tuple|
+            allElements.push(tuple)
+          end
+        end
+      end
+
+      self.storage = []
+      self.size = 0
+      self.buckets = (self.buckets * 0.5)
+
+      allElements.each do |tuple|
+        self.insert(tuple[0], tuple[1])
+      end
+
+      self.resizing = false
+      return 'HashTable number of buckets have been halved.'
+    end
+  end
+
+end
+
+############
 # Unit Tests
-##########
+############
 
 require 'test/unit'
 
@@ -203,132 +292,4 @@ class HashTableClassTest < Test::Unit::TestCase
 
     assert_equal(8, test.buckets)
   end
-end
-###############
-# HashTable class
-###############
-
-class HashTable
-
-  attr_accessor :storage, :buckets, :size, :resizing
-
-  def initialize
-    @storage = []
-    @buckets = 8
-    @size = 0
-    @resizing = false
-  end
-
-  def hash(str)
-    hash = 5381
-
-    str.split("").each do |i|
-      char = i
-      hash = ((hash << 5) + hash) + char.ord
-    end
-    return hash % self.buckets
-  end
-
-  def insert(key, value)
-    bucket_index = self.hash(key)
-    if self.storage[bucket_index] == nil 
-      self.storage[bucket_index] = []
-      self.storage[bucket_index].push([key, value])
-      self.size += 1
-      self.resize
-    else
-      bucket = self.storage[bucket_index]
-
-      bucket.length.times do |counter|
-        if bucket[counter][0] == key
-          bucket[counter][1] = value
-        end
-      end
-
-      bucket.push([key, value])
-      self.size += 1
-      self.resize
-    end
-  end
-
-  def delete(key)
-    bucket_index = self.hash(key)
-
-    if self.storage[bucket_index] == nil
-      return "Key: '#{key}' not found."
-    else
-      bucket = self.storage[bucket_index]
-      bucket.length.times do |counter|
-        if bucket[counter][0] == key
-          temp = bucket[counter][1]
-          bucket.delete_at(counter)
-          self.resize
-          self.size -= 1
-          return "key-value: [#{key}][#{temp}] was deleted."
-        end
-      end
-      return "This key was not found: '#{key}'"
-    end
-  end
-
-  def retrieve(key)
-    bucket_index = self.hash(key)
-
-    if self.storage[bucket_index] == nil
-      return false
-    else
-      bucket = self.storage[bucket_index]
-      bucket.length.times do |counter|
-        if bucket[counter][0] == key
-          return true
-        end
-      end
-    end
-  end
-
-  def resize
-    allElements = []
-    if self.size > (0.75 * self.buckets) && (self.resizing == false)
-      self.resizing = true
-      self.storage.each do |bucket|
-        if bucket != nil
-          bucket.each do |tuple|
-            allElements.push(tuple)
-          end
-        end
-      end
-    
-      self.storage = []
-      self.size = 0
-      self.buckets = (self.buckets * 2)
-
-      allElements.each do |tuple|
-        self.insert(tuple[0], tuple[1])
-      end
-      self.resizing = false
-      return 'HashTable number of buckets has been doubled.'
-    # We don't want our buckets to go below 8 buckets minimum
-    elsif (self.size < (0.25 * self.buckets)) && self.buckets >= 9.0 && (self.resizing == false)
-      self.resizing = true
-      self.storage.each do |bucket|
-        if bucket != nil
-          bucket.each do |tuple|
-            allElements.push(tuple)
-          end
-        end
-      end
-
-      self.storage = []
-      self.size = 0
-      self.buckets = (self.buckets * 0.5)
-
-      allElements.each do |tuple|
-        self.insert(tuple[0], tuple[1])
-      end
-
-      self.resizing = false
-      return 'HashTable number of buckets have been halved.'
-    end
-  end
-
 end
