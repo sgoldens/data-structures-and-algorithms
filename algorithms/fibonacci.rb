@@ -40,7 +40,7 @@ end
 def fib_tabulation(n)
   f = [0,1]
   (n-1).times do |i|
-    f[i+2] = f[i+1]+ f[i]
+    f[i+2] = f[i+1] + f[i]
   end
   f[n]
 end

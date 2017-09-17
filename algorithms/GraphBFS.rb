@@ -1,37 +1,5 @@
 require_relative('../Graph')
 
-##########
-# Unit Tests
-##########
-
-class GraphBFSTest < Test::Unit::TestCase
-  
-  def test_graph_bfs_returns_true_when_target_is_found
-    test = GraphBFS.new
-    test.populate_directed([[0,1], [0,2], [0,3], [1,4], [1,6], [1,8], [2,3], [2,7], [2,8], [3,1], [3,8], [4,6], [5,7], [5,8], [6,4], [6,9], [7,4], [8,1], [9,4]])
-
-    assert_equal([0, 1, 2, 3, 4, 6, 8, 7, 9], test.bfs(0))
-    assert_equal([1, 2, 3, 4, 6, 8, 7, 9], test.bfs(1))
-    assert_equal([2, 1, 3, 4, 6, 8, 7, 9], test.bfs(2))
-    assert_equal([3, 1, 2, 4, 6, 8, 7, 9], test.bfs(3))
-    assert_equal([4, 1, 2, 3, 6, 8, 7, 9], test.bfs(4))
-    assert_equal([5, 1, 2, 3, 4, 6, 8, 7, 9], test.bfs(5))
-    assert_equal([6, 1, 2, 3, 4, 8, 7, 9], test.bfs(6))
-    assert_equal([7, 1, 2, 3, 4, 6, 8, 9], test.bfs(7))
-    assert_equal([8, 1, 2, 3, 4, 6, 7, 9], test.bfs(8))
-    assert_equal([9, 1, 2, 3, 4, 6, 8, 7], test.bfs(9))
-  end
-
-  def test_graph_bfs_returns_false_when_target_is_not_found
-    test = GraphBFS.new
-    test.populate_directed([[0,1], [0,2], [0,3], [1,4], [1,6], [1,8], [2,3], [2,7], [2,8], [3,1], [3,8], [4,6], [5,7], [5,8], [6,4], [6,9], [7,4], [8,1], [9,4]])
-    
-    assert_equal(false, test.bfs(10))
-    assert_equal(false, test.bfs("10"))
-    assert_equal(false, test.bfs(99))
-  end
-end
-
 ################
 # GraphBFS class
 ################
@@ -84,4 +52,37 @@ class GraphBFS < Graph
     end
   end
 
+end
+
+
+############
+# Unit Tests
+############
+
+class GraphBFSTest < Test::Unit::TestCase
+  
+  def test_graph_bfs_returns_true_when_target_is_found
+    test = GraphBFS.new
+    test.populate_directed([[0,1], [0,2], [0,3], [1,4], [1,6], [1,8], [2,3], [2,7], [2,8], [3,1], [3,8], [4,6], [5,7], [5,8], [6,4], [6,9], [7,4], [8,1], [9,4]])
+
+    assert_equal([0, 1, 2, 3, 4, 6, 8, 7, 9], test.bfs(0))
+    assert_equal([1, 2, 3, 4, 6, 8, 7, 9], test.bfs(1))
+    assert_equal([2, 1, 3, 4, 6, 8, 7, 9], test.bfs(2))
+    assert_equal([3, 1, 2, 4, 6, 8, 7, 9], test.bfs(3))
+    assert_equal([4, 1, 2, 3, 6, 8, 7, 9], test.bfs(4))
+    assert_equal([5, 1, 2, 3, 4, 6, 8, 7, 9], test.bfs(5))
+    assert_equal([6, 1, 2, 3, 4, 8, 7, 9], test.bfs(6))
+    assert_equal([7, 1, 2, 3, 4, 6, 8, 9], test.bfs(7))
+    assert_equal([8, 1, 2, 3, 4, 6, 7, 9], test.bfs(8))
+    assert_equal([9, 1, 2, 3, 4, 6, 8, 7], test.bfs(9))
+  end
+
+  def test_graph_bfs_returns_false_when_target_is_not_found
+    test = GraphBFS.new
+    test.populate_directed([[0,1], [0,2], [0,3], [1,4], [1,6], [1,8], [2,3], [2,7], [2,8], [3,1], [3,8], [4,6], [5,7], [5,8], [6,4], [6,9], [7,4], [8,1], [9,4]])
+    
+    assert_equal(false, test.bfs(10))
+    assert_equal(false, test.bfs("10"))
+    assert_equal(false, test.bfs(99))
+  end
 end
