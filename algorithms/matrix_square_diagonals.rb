@@ -1,17 +1,18 @@
-# matrix_square_diagonals
-# Input: An array of positive integers of a length which it's square root
-# is also an integer (not a fraction.)
-# Output: All diagonals which traverse the square grid 
-# from the top-right to the bottom-left
-
+# matrix_square_diagonals.rb
+#
+# Input: An array of positive integers of a length that has a square root
+# which is whole number, an integer (not a fraction/decimal.)
+#
+# Output: All diagonals which traverse the square matrix traversing down 1 and right 1 from the top-right to the bottom-left
+# 
 # Example input:
 # test_matrix_array = [1,5,2,0,4,3,6,3,8,6,9,4,5,3,1,2]
-# ... which can be expressed as a square
-# [[1,5,2,0],
-#  [4,3,6,3],
-#  [8,6,9,4],
-#  [5,3,1,2]]
-
+#    ... which can be expressed as a square grid/matrix
+#       [[1,5,2,0],
+#        [4,3,6,3],
+#        [8,6,9,4],
+#        [5,3,1,2]]
+# 
 # Example output:
 # 0
 # 2 3
