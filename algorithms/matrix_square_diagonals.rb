@@ -1,13 +1,14 @@
 # matrix_square_diagonals.rb
 #
 # Input: An array of positive integers of a length that has a square root
-# which is whole number, an integer (not a fraction/decimal.)
+#   which is whole number, an integer (not a fraction/decimal.)
 #
-# Output: All diagonals which traverse the square matrix traversing down 1 and right 1 from the top-right to the bottom-left
+# Output: All diagonals which traverse the square matrix traversing down 1 and 
+#   right 1 from the top-right to the bottom-left
 # 
 # Example input:
-# test_matrix_array = [1,5,2,0,4,3,6,3,8,6,9,4,5,3,1,2]
-#    ... which can be expressed as a square grid/matrix
+#   test_matrix_array = [1,5,2,0,4,3,6,3,8,6,9,4,5,3,1,2]
+#     ... which can be expressed as a square grid/matrix
 #       [[1,5,2,0],
 #        [4,3,6,3],
 #        [8,6,9,4],
@@ -28,8 +29,8 @@ def matrix_square_diagonals(arr)
   square_size = Math.sqrt(arr.size)
 
   if !square_size.to_s.include?('.0')
-    p "Invalid input: Not able to create a square grid. Please use an input array which has size such that its square root is not a fraction."
-    return
+    return "Invalid input: Not able to create a square grid. Please use an input " + 
+      "array which has size such that its square root is not a fraction."
   end 
 
   make_grid = lambda { |grid|
@@ -72,8 +73,33 @@ def matrix_square_diagonals(arr)
 
 end
 
+# Tests
+
 test_matrix_array = [1,5,2,0,4,3,6,3,8,6,9,4,5,3,1,2]
 test_matrix_array_2 = [1,5,2,0,4,3,6,3,8,6,9,4,5,3,1,2,1,5,2,0,4,3,6,3,8,6,9,4,5,3,1,2,1,2,3,4]
+test_matrix_array_invalid = [1,5,2,0,4,3,6,3,8,6,9,4,5,3,1,2,1,5,2,0,4]
 
-p matrix_square_diagonals(test_matrix_array) === [[0], [2, 3], [5, 6, 4], [1, 3, 9, 2], [4, 6, 1], [8, 3], [5]]
-p matrix_square_diagonals(test_matrix_array_2) === [[3], [4, 4], [0, 9, 5], [2, 6, 1, 3], [5, 8, 2, 6, 3], [1, 3, 1, 3, 5, 4], [6, 3, 4, 4, 3], [5, 0, 9, 2], [2, 6, 1], [8, 2], [1]]
+p matrix_square_diagonals(test_matrix_array_invalid) === 'Invalid input: Not able to create a square grid. Please use an input array which has size such that its square root is not a fraction.'
+
+p matrix_square_diagonals(test_matrix_array) === [
+  [0], 
+  [2, 3], 
+  [5, 6, 4], 
+  [1, 3, 9, 2], 
+  [4, 6, 1], 
+  [8, 3], 
+  [5]
+  ]
+p matrix_square_diagonals(test_matrix_array_2) === [
+  [3],
+  [4, 4], 
+  [0, 9, 5], 
+  [2, 6, 1, 3], 
+  [5, 8, 2, 6, 3], 
+  [1, 3, 1, 3, 5, 4], 
+  [6, 3, 4, 4, 3], 
+  [5, 0, 9, 2], 
+  [2, 6, 1], 
+  [8, 2], 
+  [1]
+]
