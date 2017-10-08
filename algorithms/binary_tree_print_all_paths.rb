@@ -1,5 +1,5 @@
 
-# Print all paths from root to leaf nodes
+# Print all paths from the root node to leaf nodes
 # 
 # Example input:
 #
@@ -16,13 +16,32 @@
 #            \
 #             H                 #great_great_great_grandchild
 #
-#
-#
-#
 # Example output:
 # 
 #  ["ABDE", "ABDFGH", "ABI", "ACJ", "ACKLM"]
 #   
+# Solution : 
+#   1) check for an empty root node, return if so
+#   2) a) declare an new array called     paths
+#      b) another new array called    root_node, with element one as
+#           the root node and the second element as the root node value
+#      c) declare a third array called    queue, and make the first element
+#           the root_node array from step 2b)
+#   3) loop over the queue until it is empty
+#        a) each iteration shifting the queue's first element into 
+#             two variables, parent & path
+#        b) if parent.left && parent.right are empty, we're at a leaf node
+#             so push the accumulated path var to the paths array
+#        c) else, if there is a parent.left node, push that into the queue
+#             as an array of [parent.left, path + parent.left.value]
+#             ... and do the same check and push for 
+#             any [parent.right, path + parent.right.value]
+#   4) after exiting the loop, (optionally sort* and) return the paths array
+# 
+#      * The added #sort method on the return value bloats the runtime from
+#          from O(n) to O(n log n), which is only worth doing in cases
+#          where sorted returned arrays are a neccesssixy. 
+
 
 class Node
   
@@ -56,10 +75,6 @@ def print_all_paths_iterative(root)
   paths.sort
 end
 
-def print_all_paths_recursive(node)
-
-end
-
 root = Node.new(options={value: "A"})
 child_1 = Node.new(options={value: "B"})
 child_2 = Node.new(options={value: "C"})
@@ -87,6 +102,7 @@ great_grandchild_3.right = great_great_grandchild_2 # M
 great_great_grandchild_1.right = great_great_great_grandchild_1 # H
 
 p print_all_paths_iterative(root) === ["ABDE", "ABDFGH", "ABI", "ACJ", "ACKLM"]
+p print_all_paths_iterative(nil) === []
 
 # Referenced sites: 
 #   - http://www.geeksforgeeks.org/given-a-binary-tree-print-all-root-to-leaf-paths/
