@@ -40,7 +40,7 @@
 # 
 #      * The added #sort method on the return value bloats the runtime from
 #          from O(n) to O(n log n), which is only worth doing in cases
-#          where sorted returned arrays are a neccesssixy. 
+#          where sorted returned arrays are a neccesssity.
 
 
 class Node
