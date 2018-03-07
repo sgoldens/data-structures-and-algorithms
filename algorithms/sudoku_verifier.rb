@@ -42,7 +42,6 @@ def sudoku_verifier(grid)
       true
     }
 
-    # check_box.call(grid)
     if check_row.call(grid) === true &&
        check_column.call(grid) === true && check_box.call(grid) === true
         return true
