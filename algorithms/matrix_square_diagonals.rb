@@ -1,4 +1,4 @@
-# matrix_square_diagonals.rb
+c# matrix_square_diagonals.rb
 #
 # Input: An array of positive integers of a length that has a square root
 #   which is whole number, an integer (not a fraction/decimal.)

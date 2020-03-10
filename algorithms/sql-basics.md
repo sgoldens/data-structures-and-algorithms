@@ -90,6 +90,38 @@ This statement will return all of the unique ages in the employee_info table.
 
 **ALL** will display "all" of the specified columns including all of the duplicates. The **ALL** keyword is the default if nothing is specified.
 
+#### Aggregate Functions
+ 
+function | description
+--- | ---
+MIN | returns the smallest value in a given column
+MAX | returns the largest value in a given column
+SUM | returns the sum of the numeric values in a given column
+AVG | returns the average value of a given column
+COUNT | returns the total number of values in a given column
+COUNT(\*)  | returns the number of rows in a table
+
+Example: 
+
+```SQL
+SELECT AVG(salary)
+
+FROM employee;
+```
+
+#### GROUP BY 
+
+
+```SQL
+SELECT max(salary), dept
+ 
+FROM employee 
+ 
+GROUP BY dept;
+```
+
+This statement will select the maximum salary for the people in each unique department. Basically, the salary for the person who makes the most in each department will be displayed. Their, salary and their department will be returned.
+
 ## CREATE
 
 The **CREATE TABLE** statement is used to create a new table. Here is the format of a simple create table statement:
@@ -228,6 +260,7 @@ The **drop table** command is used to delete a table and all rows in the table.
 ```SQL
 DROP TABLE myemployees_sg0224;
 ```
+
 
 #### Sources referenced:
 

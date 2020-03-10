@@ -8,21 +8,29 @@ class GraphDFS < Graph
 
   def initialize
     super
-    @visited = []
+    @parent = []
     @edge_to = {}
   end
+
+# REFACTOR - Do without Graph superclass if able
+# REFACTOR - Renaming methods and refactoring for closest to MIT lecture pseudocode args as able:
+# => TODO: dfs(search_key) -> dfs_visit(adj, s)
+# => TODO: find_path(source, terminal) -> dfs(v, adj)
+# REFACTOR - Remove comments, consolidate them into the blog post I'm planning from today's MIT Online DFS lecture notes
+# REFACTOR - Explain that shortest path and topological sort share methodologies, even though the current implementation is iterative
+
 
  # Depth First Search (DFS)
   def dfs(search_key)
     # verify the search_key exists
     return false unless get_vertex(search_key)
     if get_vertex(search_key)
-      # push the search key into the @visitor array
-      @visited << search_key
+      # push the search key into the @parent array
+      @parent << search_key
       # find the neighbors of search_key and loop over them
       find_neighbors(search_key).each do |neighbor|
-        # neglect vertices already visited
-        next if @visited.include?(neighbor)
+        # neglect vertices already parent
+        next if @parent.include?(neighbor)
         # recursively run dfs() on this neighbor
         dfs(neighbor)
         # add the step to the @edge_to hash for pathfinding algorithms
@@ -35,10 +43,10 @@ class GraphDFS < Graph
   # Shortest path using DFS
   # Find the shortest path between two vertices
   def find_path(source, terminal)
-    # run dfs() to populate the @visited array
+    # run dfs() to populate the @parent array
     dfs(source)
     # check that terminal is connected to source
-    return false unless @visited.include?(terminal)
+    return false unless @parent.include?(terminal)
     path = []
     # set current as the target terminal vertex
     current = terminal

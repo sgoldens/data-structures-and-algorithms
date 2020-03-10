@@ -17,8 +17,9 @@ def merge(left, right)
       sorted << right.shift
     end
   end
-  sorted.concat(left).concat(right)
+  p sorted.concat(left).concat(right)
 end
 
 test = Array.new(10) { |i| rand(100) }
-p (mergesort(test) === test.sort!) === true
+p mergesort(test)
+p mergesort(test)

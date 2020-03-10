@@ -91,7 +91,7 @@ grid_false_box = [[".",".",".","1","4",".",".","2","."],
              [".",".",".",".",".","7",".",".","."], 
              [".",".",".","5",".","5",".","7","."]]
 
-p sudoku_verifier(grid_true) === true
-p sudoku_verifier(grid_false_row) === false
-p sudoku_verifier(grid_false_column) === false
-p sudoku_verifier(grid_false_box) === false
+# p sudoku_verifier(grid_true) === true
+# p sudoku_verifier(grid_false_row) === false
+# p sudoku_verifier(grid_false_column) === false
+# p sudoku_verifier(grid_false_box) === false

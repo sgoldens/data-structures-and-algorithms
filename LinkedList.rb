@@ -109,7 +109,7 @@ class LinkedList
       work = head
       counter = 1
 
-      while !work.next.nil? && !work.next.next.nil? && counter <= location
+      while !work.next.nil? && counter <= location
         if location == counter
           work.next = work.next.next
           self.size -= 1
